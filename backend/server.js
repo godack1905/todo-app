@@ -15,34 +15,105 @@ db.prepare(`
   )
 `).run();
 
-// Frontend simple
+// Frontend simple y moderno
 app.get("/", (req, res) => {
-  res.send(`
-<!DOCTYPE html>
+  res.send(`<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
 <title>Tareas Familia</title>
 <style>
-body { font-family: sans-serif; max-width: 600px; margin: auto; }
-li.done { text-decoration: line-through; color: gray; }
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    max-width: 600px;
+    margin: 40px auto;
+    background: #f9f9f9;
+    color: #333;
+    padding: 0 20px;
+  }
+
+  h1 {
+    text-align: center;
+    color: #007bff;
+  }
+
+  input {
+    width: 75%;
+    padding: 10px;
+    font-size: 16px;
+    margin-right: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+
+  button {
+    padding: 10px 15px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background: #007bff;
+    color: white;
+    transition: background 0.2s;
+  }
+
+  button:hover {
+    background: #0056b3;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+  }
+
+  li {
+    background: white;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: background 0.2s;
+  }
+
+  li.done {
+    text-decoration: line-through;
+    color: gray;
+    background: #e9ecef;
+  }
+
+  li button {
+    background: #dc3545;
+    margin-left: 10px;
+  }
+
+  li button:hover {
+    background: #a71d2a;
+  }
 </style>
 </head>
 <body>
-<h1>Tareas</h1>
-<input id="task" placeholder="Nueva tarea" />
-<button onclick="add()">Añadir</button>
+<h1>📝 Tareas Familia</h1>
+<div style="text-align:center">
+  <input id="task" placeholder="Nueva tarea..." />
+  <button onclick="add()">Añadir</button>
+</div>
 <ul id="list"></ul>
 
 <script>
 async function load() {
   const res = await fetch('/tasks');
   const tasks = await res.json();
+  const list = document.getElementById('list');
   list.innerHTML = '';
   tasks.forEach(t => {
     const li = document.createElement('li');
     li.textContent = t.text;
-    li.className = t.done ? 'done' : '';
+    if(t.done) li.classList.add('done');
     li.onclick = () => toggle(t.id);
     const btn = document.createElement('button');
     btn.textContent = '❌';
@@ -53,13 +124,15 @@ async function load() {
 }
 
 async function add() {
-  const text = task.value;
+  const taskInput = document.getElementById('task');
+  const text = taskInput.value.trim();
+  if(!text) return;
   await fetch('/tasks', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({ text })
   });
-  task.value = '';
+  taskInput.value = '';
   load();
 }
 
@@ -87,20 +160,18 @@ app.get("/tasks", (req, res) => {
 });
 
 app.post("/tasks", (req, res) => {
-  db.prepare("INSERT INTO tasks (text) VALUES (?)")
-    .run(req.body.text);
+  if(!req.body.text || !req.body.text.trim()) return res.sendStatus(400);
+  db.prepare("INSERT INTO tasks (text) VALUES (?)").run(req.body.text.trim());
   res.sendStatus(201);
 });
 
 app.put("/tasks/:id", (req, res) => {
-  db.prepare("UPDATE tasks SET done = NOT done WHERE id = ?")
-    .run(req.params.id);
+  db.prepare("UPDATE tasks SET done = NOT done WHERE id = ?").run(req.params.id);
   res.sendStatus(200);
 });
 
 app.delete("/tasks/:id", (req, res) => {
-  db.prepare("DELETE FROM tasks WHERE id = ?")
-    .run(req.params.id);
+  db.prepare("DELETE FROM tasks WHERE id = ?").run(req.params.id);
   res.sendStatus(200);
 });
 
