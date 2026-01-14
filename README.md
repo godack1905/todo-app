@@ -28,4 +28,4 @@ Easy redeploy with one command
 - Frontend: Plain HTML + JavaScript
 - Containerization: Docker
 - CI/CD: GitHub Actions
-- Registry: Docker Hub
+- Registry: GitHub Container Registry (GHCR)
