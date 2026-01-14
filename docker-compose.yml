@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   todo:
-    image: godack/todo-family:latest
+    image: ghcr.io/godack1905/todo-family:latest
     container_name: todo-app
     ports:
       - "3000:3000"
