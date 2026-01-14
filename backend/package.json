@@ -1,0 +1,9 @@
+{
+  "name": "todo-family",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "express": "^4.19.2",
+    "better-sqlite3": "^9.4.0"
+  }
+}
